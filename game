@@ -1,0 +1,185 @@
+import sys
+import time
+
+# 初始化全局变量
+relationship = 0
+player_name = ""
+selected_options = set()  # 用于记录已选选项
+
+# 设置特殊名字加成
+def set_special_name():
+    global relationship
+    if player_name == "火野映司":
+        relationship += 3
+    elif player_name == "后藤慎太郎":
+        relationship += 1
+
+# 逐字打印效果
+def print_typewriter(text, delay=0.03):
+    for char in text:
+        print(char, end='', flush=True)
+        time.sleep(delay)
+    print()
+
+# 打印游戏结束信息
+def print_end():
+    print_typewriter("=================================")
+    if relationship >= 10:
+        print_typewriter("结局：")
+        print_typewriter("安库：\"哼，你这家伙和我之前那个惹人嫌的笨蛋还蛮像的嘛。嘛，如果需要帮助，帮帮你也无所谓。\"")
+    elif relationship < 10:
+        print_typewriter("结局：")
+        print_typewriter("安库：\"人类……你还是让我失望了。滚开。\"")
+
+    # 检查特殊结局
+    if player_name == "火野映司":
+        print_typewriter("隐藏结局：")
+        print_typewriter("安库：\"哈哈哈。别装了……我知道是你哦，你这个笨蛋还知道回来，撒，欢迎回来，映司。\"")
+    elif player_name == "后藤慎太郎":
+        print_typewriter("隐藏结局：")
+        print_typewriter("安库：\"诞骑的变身者原来平时都摆着个入党脸吗。哼哼……但起码今天不错\"")
+
+# 游戏主流程
+def game_loop():
+    global relationship, player_name, selected_options
+    print_typewriter("请输入主角名字：")
+    player_name = input().strip()
+    set_special_name()
+
+    print_typewriter(f"\n在公园里，主角 {player_name} 遇到了神秘的安库。")
+
+    while True:
+        # 检查是否所有选项已被选过
+        if len(selected_options) == 3:
+            print_typewriter("\n所有选项都已完成，游戏结束。")
+            print_end()
+            sys.exit()
+
+        print_typewriter("\n请选择下一个行动：")
+        print_typewriter("   A. 开始游戏")
+        print_typewriter("   B. 查看与安库的关系")
+        print_typewriter("   C. 退出游戏")
+
+        choice = input("\n请输入选项（A/B/C）：").upper()
+
+        if choice == "C":
+            print_typewriter("游戏结束。")
+            print_end()
+            sys.exit()
+
+        if choice == "B":
+            print_typewriter(f"当前关系值：{relationship}")
+            continue
+
+        if choice == "A":
+            if "A" in selected_options:
+                print_typewriter("\n笨蛋，你自己选过什么都不知道吗。")
+                continue
+            selected_options.add("A")
+
+            # 第一次对话分支
+            print_typewriter("\n安库：\"喂，人类，你为什么在这里？\"")
+            while True:
+                choice_a_or_b = input("\nA. 我只是路过……   B. 来偷你的硬币……\n请输入选项（A/B）：").upper()
+                if choice_a_or_b == "A":
+                    print_typewriter("\n安库：\"同样的错误不可能再犯第二遍。你，可别想骗我。\"")
+                    break
+                elif choice_a_or_b == "B":
+                    print_typewriter("\n安库：\"？！别想碰我的硬币\"\n关系值直接清零，game over。")
+                    sys.exit()
+                else:
+                    print_typewriter("\n请输入有效的选项（A/B）。")
+
+            # 第二次对话分支
+            print_typewriter("\n选择接下来的对话：")
+            while True:
+                choice_next = input("\nA. 主角：\"你知道吗？我今天看到卡扎力在追自己的尾巴，超级有趣！\"\nB. 主角：\"话说你对人类的看法是什么？\"\n请输入选项（A/B）：").upper()
+                if choice_next == "A":
+                    relationship += 2
+                    print_typewriter("\n安库：\"这就能让你笑了……还好你是个笨蛋。\"")
+                    print_typewriter("主角：\"哈哈，你也会笑吧？\"\n安库：\"哼，我才不会笑呢。\"\n（关系值+2）")
+                    break
+                elif choice_next == "B":
+                    relationship += 1
+                    print_typewriter("\n安库：\"人类……有时候很让人头疼，但某个家伙倒也不那么赖。\"\n（关系值+1）")
+                    while True:
+                        choice_heart = input("\nA. 好想知道是谁啊！   B. 难道是安库你的心上人吗？\n请输入选项（A/B）：").upper()
+                        if choice_heart == "A":
+                            relationship += 2
+                            print_typewriter("\n安库：\"谁知道呢……\"\n（关系值+2）")
+                            break
+                        elif choice_heart == "B":
+                            relationship -= 1
+                            print_typewriter("\n安库：\"……无聊\"\n（关系值-1）")
+                            break
+                        else:
+                            print_typewriter("\n请输入有效的选项（A/B）。")
+                    break
+                else:
+                    print_typewriter("\n请输入有效的选项（A/B）。")
+
+            # 硬币事件
+            print_typewriter("\n（旁白：主角突然发现了形似硬币的东西）")
+            print_typewriter("主角：\"硬币……？\"\n安库：\"滚开！让你碰了吗？\"")
+            while True:
+                choice_coin = input("\nA. 只是碰一下嘛，又不会怎么样   B. 抱歉……我只是觉得这些硬币看起来很乱，需要帮忙整理一下吗？\n请输入选项（A/B）：").upper()
+                if choice_coin == "A":
+                    print_typewriter("\n安库：\"你果然是那些贪欲者找来偷我硬币的吧……！\"\n关系值直接清零，game over。")
+                    sys.exit()
+                elif choice_coin == "B":
+                    relationship += 2
+                    print_typewriter("\n安库：\"哼，你要是能帮我整理好，那也无所谓。\"\n（关系值+2）")
+                    while True:
+                        choice_curiosity = input("\nA. 揣着好奇心去碰   B. 放下好奇心\n请输入选项（A/B）：").upper()
+                        if choice_curiosity == "A":
+                            relationship += 1
+                            print_typewriter("\n安库：\"别碰那个，那是我的宝贝。\"\n（关系值+1）")
+                            break
+                        elif choice_curiosity == "B":
+                            relationship += 2
+                            print_typewriter("\n安库：\"原来<player>还挺有自知之明嘛……哼哼\"\n（关系值+2）")
+                            break
+                        else:
+                            print_typewriter("\n请输入有效的选项（A/B）。")
+                    break
+                else:
+                    print_typewriter("\n请输入有效的选项（A/B）。")
+
+            # 寻找重要东西
+            print_typewriter("\n（旁白：过了一会）")
+            print_typewriter("主角：\"你看起来在找什么重要东西，需要帮忙吗？\"\n安库：\"……不用，我的事情你不用管\"")
+            while True:
+                choice_help = input("\nA. 那好吧   B. 只是好心帮个忙嘛，又不会怎么样的！\n请输入选项（A/B）：").upper()
+                if choice_help == "A":
+                    print_typewriter("\n安库自己慢慢寻找着东西……\n（关系值不变）")
+                    break
+                elif choice_help == "B":
+                    relationship += 2
+                    print_typewriter("\n安库：\"……行吧，但别指望我会感谢你。\"\n（关系值+2）")
+                    break
+                else:
+                    print_typewriter("\n请输入有效的选项（A/B）。")
+
+            # 照片事件
+            print_typewriter("\n（旁白：两人寻找了一会）")
+            print_typewriter("主角：\"诶，这就是安库说的重要的东西吗？是一张照片欸！\"\n")
+            while True:
+                choice_photo = input("\nA. 询问照片上的是谁   B. 不询问，只是默默看着照片\n请输入选项（A/B）：").upper()
+                if choice_photo == "A":
+                    relationship += 2
+                    print_typewriter("\n安库：\"……怪力女和不好好珍惜自己的笨蛋罢了\"\n（关系值+2）")
+                    break
+                elif choice_photo == "B":
+                    print_typewriter("\n安库：\"喂，你这家伙，盯这个照片这么久干什么……\"\n（关系值不变）")
+                    break
+                else:
+                    print_typewriter("\n请输入有效的选项（A/B）。")
+
+            # 散步事件
+            print_typewriter("\n主角：\"话说安库要不要一起去公园散步？\"\n")
+            while True:
+                choice_walk = input("\nA. 一起去公园散步   B. 我一个人去公园散步\n请输入选项（A/B）：").upper()
+                if choice_walk == "A":
+                    print_typewriter("\n安库：\"……好吧，但别走得太慢。\"\n（关系值+1）")
+                    while True:
+          
